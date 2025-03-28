@@ -1,0 +1,9 @@
+pandas
+numpy
+matplotlib
+seaborn
+google-analytics-data
+python-dotenv
+openpyxl
+reportlab
+flask
