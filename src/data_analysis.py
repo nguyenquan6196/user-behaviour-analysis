@@ -1,6 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt # type: ignore
-import seaborn as sns # type: ignore
 
 class DataAnalyzer:
     def __init__(self, csv_path):
@@ -9,10 +7,12 @@ class DataAnalyzer:
         
     def get_daily_visits(self):
         daily_visits = self.df.groupby(self.df['timestamp'].dt.date).size()
+        daily_visits.index = daily_visits.index.map(str)
         return daily_visits
     
     def get_top_pages(self, n=5):
-        return self.df['page_url'].value_counts().head(n)
+        top_pages = self.df['page_url'].value_counts().head(n)
+        return top_pages
     
     def get_avg_session_duration(self):
         session_durations = self.df.groupby('session_id').agg({
@@ -32,10 +32,10 @@ class DataAnalyzer:
             
             # Session duration
             avg_duration = self.get_avg_session_duration()
-            pd.Series({'Average Session Duration (s)': avg_duration}).to_excel(
-                writer, sheet_name='Session Duration'
+            pd.DataFrame({'Average Session Duration (s)': [avg_duration]}).to_excel(
+                writer, sheet_name='Session Duration', index=False
             )
 
 if __name__ == "__main__":
-    analyzer = DataAnalyzer('data/sample_data.csv')
+    analyzer = DataAnalyzer('data/user_behavior.csv')
     analyzer.export_to_excel('reports/excel_reports/analysis_results.xlsx')
