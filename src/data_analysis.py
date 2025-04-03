@@ -15,10 +15,8 @@ class DataAnalyzer:
         return top_pages
     
     def get_avg_session_duration(self):
-        session_durations = self.df.groupby('session_id').agg({
-            'timestamp': lambda x: (x.max() - x.min()).total_seconds()
-        })
-        return session_durations['timestamp'].mean()
+        session_durations = self.df.groupby('session_id')['event_duration'].mean()
+        return session_durations
     
     def export_to_excel(self, output_path):
         with pd.ExcelWriter(output_path) as writer:
@@ -31,9 +29,11 @@ class DataAnalyzer:
             top_pages.to_excel(writer, sheet_name='Top Pages')
             
             # Session duration
-            avg_duration = self.get_avg_session_duration()
-            pd.DataFrame({'Average Session Duration (s)': [avg_duration]}).to_excel(
-                writer, sheet_name='Session Duration', index=False
+            session_durations = self.get_avg_session_duration()
+            session_durations.to_excel(
+                writer, 
+                sheet_name='Session Duration',
+                header=['Duration (seconds)']
             )
 
 if __name__ == "__main__":
